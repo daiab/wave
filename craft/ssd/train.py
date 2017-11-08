@@ -105,6 +105,50 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
+class Args:
+    def __init__(self):
+        self.use_voc07_metric = True
+        self.use_difficult = False
+        self.force_nms = False
+        self.overlap_thresh = 0.5
+        self.nms_thresh = 0.45
+        self.class_names = 'aeroplane, bicycle, bird, boat, bottle, bus, \
+                        car, cat, chair, cow, diningtable, dog, horse, motorbike, \
+                        person, pottedplant, sheep, sofa, train, tvmonitor'
+        self.num_example = 16551
+        self.num_class = 20
+        self.monitor_pattern = ".*"
+        self.monitor = 0
+        self.log_file = 'train.log'
+        self.freeze_pattern = "^(conv1_|conv2_).*"
+        self.lr_refactor_ratio = 0.1
+        self.lr_refactor_step = '80, 160'
+        self.mean_b = 104
+        self.mean_g = 117
+        self.mean_r = 123
+        self.weight_decay = 0.0005
+        self.momentum = 0.9
+        self.learning_rate = 0.002
+        self.label_width = 350
+        self.data_shape = 300
+        self.frequent = 20
+        self.end_epoch = 240
+        self.begin_epoch = 0
+        self.prefix = os.path.join(os.getcwd(), 'model', 'ssd')
+        self.gpus = '0'
+        self.epoch = 1
+        self.pretrained = ''
+        self.finetune = -1
+        self.resume = -1
+        self.batch_size = 16
+        self.network = 'vgg16_reduced'
+        self.val_list = ""
+        self.val_path = os.path.join(os.getcwd(), 'data', 'val.rec')
+        self.train_list = ""
+        self.train_path = os.path.join(os.getcwd(), 'data', 'train.rec')
+
+
 def parse_class_names(args):
     """ parse # classes and class_names if applicable """
     num_class = args.num_class
@@ -123,20 +167,33 @@ def parse_class_names(args):
     return class_names
 
 if __name__ == '__main__':
-    args = parse_args()
+    args = Args()
     # context list
     ctx = [mx.gpu(int(i)) for i in args.gpus.split(',') if i.strip()]
     ctx = [mx.cpu()] if not ctx else ctx
     # class names if applicable
     class_names = parse_class_names(args)
     # start training
-    train_net(args.network, args.train_path,
-              args.num_class, args.batch_size,
-              args.data_shape, [args.mean_r, args.mean_g, args.mean_b],
-              args.resume, args.finetune, args.pretrained,
-              args.epoch, args.prefix, ctx, args.begin_epoch, args.end_epoch,
-              args.frequent, args.learning_rate, args.momentum, args.weight_decay,
-              args.lr_refactor_step, args.lr_refactor_ratio,
+    train_net(args.network,
+              args.train_path,
+              args.num_class,
+              args.batch_size,
+              args.data_shape,
+              [args.mean_r, args.mean_g, args.mean_b],
+              args.resume,
+              args.finetune,
+              args.pretrained,
+              args.epoch,
+              args.prefix,
+              ctx,
+              args.begin_epoch,
+              args.end_epoch,
+              args.frequent,
+              args.learning_rate,
+              args.momentum,
+              args.weight_decay,
+              args.lr_refactor_step,
+              args.lr_refactor_ratio,
               val_path=args.val_path,
               num_example=args.num_example,
               class_names=class_names,

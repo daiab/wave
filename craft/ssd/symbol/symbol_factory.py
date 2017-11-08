@@ -19,6 +19,7 @@
 import logging
 from symbol import symbol_builder
 
+
 def get_config(network, data_shape, **kwargs):
     """Configuration factory for various networks
 
@@ -37,21 +38,21 @@ def get_config(network, data_shape, **kwargs):
             num_filters = [512, -1, 512, 256, 256, 256, 256]
             strides = [-1, -1, 2, 2, 2, 2, 1]
             pads = [-1, -1, 1, 1, 1, 1, 1]
-            sizes = [[.07, .1025], [.15,.2121], [.3, .3674], [.45, .5196], [.6, .6708], \
-                [.75, .8216], [.9, .9721]]
-            ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3], \
-                [1,2,.5,3,1./3], [1,2,.5], [1,2,.5]]
+            sizes = [[.07, .1025], [.15, .2121], [.3, .3674], [.45, .5196], [.6, .6708],
+                     [.75, .8216], [.9, .9721]]
+            ratios = [[1, 2, .5], [1, 2, .5, 3, 1. / 3], [1, 2, .5, 3, 1. / 3], [1, 2, .5, 3, 1. / 3],
+                      [1, 2, .5, 3, 1. / 3], [1, 2, .5], [1, 2, .5]]
             normalizations = [20, -1, -1, -1, -1, -1, -1]
             steps = [] if data_shape != 512 else [x / 512.0 for x in
-                [8, 16, 32, 64, 128, 256, 512]]
+                                                  [8, 16, 32, 64, 128, 256, 512]]
         else:
             from_layers = ['relu4_3', 'relu7', '', '', '', '']
             num_filters = [512, -1, 512, 256, 256, 256]
             strides = [-1, -1, 2, 2, 1, 1]
             pads = [-1, -1, 1, 1, 0, 0]
-            sizes = [[.1, .141], [.2,.272], [.37, .447], [.54, .619], [.71, .79], [.88, .961]]
-            ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3], \
-                [1,2,.5], [1,2,.5]]
+            sizes = [[.1, .141], [.2, .272], [.37, .447], [.54, .619], [.71, .79], [.88, .961]]
+            ratios = [[1, 2, .5], [1, 2, .5, 3, 1. / 3], [1, 2, .5, 3, 1. / 3], [1, 2, .5, 3, 1. / 3],
+                      [1, 2, .5], [1, 2, .5]]
             normalizations = [20, -1, -1, -1, -1, -1]
             steps = [] if data_shape != 300 else [x / 300.0 for x in [8, 16, 32, 64, 100, 300]]
         if not (data_shape == 300 or data_shape == 512):
@@ -62,9 +63,9 @@ def get_config(network, data_shape, **kwargs):
         num_filters = [-1, -1, 512, 256, 256, 128]
         strides = [-1, -1, 2, 2, 2, 2]
         pads = [-1, -1, 1, 1, 1, 1]
-        sizes = [[.1, .141], [.2,.272], [.37, .447], [.54, .619], [.71, .79], [.88, .961]]
-        ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3], \
-            [1,2,.5], [1,2,.5]]
+        sizes = [[.1, .141], [.2, .272], [.37, .447], [.54, .619], [.71, .79], [.88, .961]]
+        ratios = [[1, 2, .5], [1, 2, .5, 3, 1. / 3], [1, 2, .5, 3, 1. / 3], [1, 2, .5, 3, 1. / 3],
+                  [1, 2, .5], [1, 2, .5]]
         normalizations = -1
         steps = []
         return locals()
@@ -76,9 +77,9 @@ def get_config(network, data_shape, **kwargs):
         num_filters = [-1, -1, 512, 256, 256, 128]
         strides = [-1, -1, 2, 2, 2, 2]
         pads = [-1, -1, 1, 1, 1, 1]
-        sizes = [[.1, .141], [.2,.272], [.37, .447], [.54, .619], [.71, .79], [.88, .961]]
-        ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3], \
-            [1,2,.5], [1,2,.5]]
+        sizes = [[.1, .141], [.2, .272], [.37, .447], [.54, .619], [.71, .79], [.88, .961]]
+        ratios = [[1, 2, .5], [1, 2, .5, 3, 1. / 3], [1, 2, .5, 3, 1. / 3], [1, 2, .5, 3, 1. / 3], \
+                  [1, 2, .5], [1, 2, .5]]
         normalizations = -1
         steps = []
         return locals()
@@ -90,15 +91,16 @@ def get_config(network, data_shape, **kwargs):
         num_filters = [-1, -1, 512, 256, 256, 128]
         strides = [-1, -1, 2, 2, 2, 2]
         pads = [-1, -1, 1, 1, 1, 1]
-        sizes = [[.1, .141], [.2,.272], [.37, .447], [.54, .619], [.71, .79], [.88, .961]]
-        ratios = [[1,2,.5], [1,2,.5,3,1./3], [1,2,.5,3,1./3], [1,2,.5,3,1./3], \
-            [1,2,.5], [1,2,.5]]
+        sizes = [[.1, .141], [.2, .272], [.37, .447], [.54, .619], [.71, .79], [.88, .961]]
+        ratios = [[1, 2, .5], [1, 2, .5, 3, 1. / 3], [1, 2, .5, 3, 1. / 3], [1, 2, .5, 3, 1. / 3], \
+                  [1, 2, .5], [1, 2, .5]]
         normalizations = -1
         steps = []
         return locals()
     else:
         msg = 'No configuration found for %s with data_shape %d' % (network, data_shape)
         raise NotImplementedError(msg)
+
 
 def get_symbol_train(network, data_shape, **kwargs):
     """Wrapper for get symbol for train
@@ -118,6 +120,7 @@ def get_symbol_train(network, data_shape, **kwargs):
     config = get_config(network, data_shape, **kwargs).copy()
     config.update(kwargs)
     return symbol_builder.get_symbol_train(**config)
+
 
 def get_symbol(network, data_shape, **kwargs):
     """Wrapper for get symbol for test

@@ -87,17 +87,43 @@ def get_lr_scheduler(learning_rate, lr_refactor_step, lr_refactor_ratio,
         lr_scheduler = mx.lr_scheduler.MultiFactorScheduler(step=steps, factor=lr_refactor_ratio)
         return (lr, lr_scheduler)
 
-def train_net(net, train_path, num_classes, batch_size,
-              data_shape, mean_pixels, resume, finetune, pretrained, epoch,
-              prefix, ctx, begin_epoch, end_epoch, frequent, learning_rate,
-              momentum, weight_decay, lr_refactor_step, lr_refactor_ratio,
+def train_net(net,
+              train_path,
+              num_classes,
+              batch_size,
+              data_shape,
+              mean_pixels,
+              resume,
+              finetune,
+              pretrained,
+              epoch,
+              prefix,
+              ctx,
+              begin_epoch,
+              end_epoch,
+              frequent,
+              learning_rate,
+              momentum,
+              weight_decay,
+              lr_refactor_step,
+              lr_refactor_ratio,
               freeze_layer_pattern='',
-              num_example=10000, label_pad_width=350,
-              nms_thresh=0.45, force_nms=False, ovp_thresh=0.5,
-              use_difficult=False, class_names=None,
-              voc07_metric=False, nms_topk=400, force_suppress=False,
-              train_list="", val_path="", val_list="", iter_monitor=0,
-              monitor_pattern=".*", log_file=None):
+              num_example=10000,
+              label_pad_width=350,
+              nms_thresh=0.45,
+              force_nms=False,
+              ovp_thresh=0.5,
+              use_difficult=False,
+              class_names=None,
+              voc07_metric=False,
+              nms_topk=400,
+              force_suppress=False,
+              train_list="",
+              val_path="",
+              val_list="",
+              iter_monitor=0,
+              monitor_pattern=".*",
+              log_file=None):
     """
     Wrapper for training phase.
 
@@ -184,18 +210,31 @@ def train_net(net, train_path, num_classes, batch_size,
         mean_pixels = [mean_pixels, mean_pixels, mean_pixels]
     assert len(mean_pixels) == 3, "must provide all RGB mean values"
 
-    train_iter = DetRecordIter(train_path, batch_size, data_shape, mean_pixels=mean_pixels,
-        label_pad_width=label_pad_width, path_imglist=train_list, **cfg.train)
+    train_iter = DetRecordIter(train_path,
+                               batch_size,
+                               data_shape,
+                               mean_pixels=mean_pixels,
+                               label_pad_width=label_pad_width,
+                               path_imglist=train_list,
+                               **cfg.train)
 
     if val_path:
-        val_iter = DetRecordIter(val_path, batch_size, data_shape, mean_pixels=mean_pixels,
-            label_pad_width=label_pad_width, path_imglist=val_list, **cfg.valid)
+        val_iter = DetRecordIter(val_path,
+                                 batch_size,
+                                 data_shape,
+                                 mean_pixels=mean_pixels,
+                                 label_pad_width=label_pad_width,
+                                 path_imglist=val_list,
+                                 **cfg.valid)
     else:
         val_iter = None
 
     # load symbol
-    net = get_symbol_train(net, data_shape[1], num_classes=num_classes,
-        nms_thresh=nms_thresh, force_suppress=force_suppress, nms_topk=nms_topk)
+    net = get_symbol_train(net, data_shape[1],
+                           num_classes=num_classes,
+                           nms_thresh=nms_thresh,
+                           force_suppress=force_suppress,
+                           nms_topk=nms_topk)
 
     # define layers with fixed weight/bias
     if freeze_layer_pattern.strip():
@@ -217,8 +256,7 @@ def train_net(net, train_path, num_classes, batch_size,
         _, args, auxs = mx.model.load_checkpoint(prefix, finetune)
         begin_epoch = finetune
         # the prediction convolution layers name starts with relu, so it's fine
-        fixed_param_names = [name for name in net.list_arguments() \
-            if name.startswith('conv')]
+        fixed_param_names = [name for name in net.list_arguments() if name.startswith('conv')]
     elif pretrained:
         logger.info("Start training with {} from pretrained model {}"
             .format(ctx_str, pretrained))

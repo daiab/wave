@@ -26,9 +26,12 @@ def import_module(module_name):
     sys.path.append(os.path.dirname(__file__))
     return importlib.import_module(module_name)
 
-def get_symbol_train(network, num_classes, from_layers, num_filters, strides, pads,
-                     sizes, ratios, normalizations=-1, steps=[], min_filter=128,
-                     nms_thresh=0.5, force_suppress=False, nms_topk=400, **kwargs):
+
+def get_symbol_train(network, num_classes, from_layers,
+                     num_filters, strides, pads, sizes,
+                     ratios, normalizations=-1, steps=[],
+                     min_filter=128, nms_thresh=0.5, force_suppress=False,
+                     nms_topk=400, **kwargs):
     """Build network symbol for training SSD
 
     Parameters
@@ -81,39 +84,42 @@ def get_symbol_train(network, num_classes, from_layers, num_filters, strides, pa
     label = mx.sym.Variable('label')
     body = import_module(network).get_symbol(num_classes, **kwargs)
     layers = multi_layer_feature(body, from_layers, num_filters, strides, pads,
-        min_filter=min_filter)
+                                 min_filter=min_filter)
 
-    loc_preds, cls_preds, anchor_boxes = multibox_layer(layers, \
-        num_classes, sizes=sizes, ratios=ratios, normalization=normalizations, \
-        num_channels=num_filters, clip=False, interm_layer=0, steps=steps)
+    loc_preds, cls_preds, anchor_boxes = multibox_layer(layers,
+                                                        num_classes, sizes=sizes, ratios=ratios,
+                                                        normalization=normalizations,
+                                                        num_channels=num_filters, clip=False, interm_layer=0,
+                                                        steps=steps)
 
     tmp = mx.symbol.contrib.MultiBoxTarget(
-        *[anchor_boxes, label, cls_preds], overlap_threshold=.5, \
-        ignore_label=-1, negative_mining_ratio=3, minimum_negative_samples=0, \
+        *[anchor_boxes, label, cls_preds], overlap_threshold=.5,
+        ignore_label=-1, negative_mining_ratio=3, minimum_negative_samples=0,
         negative_mining_thresh=.5, variances=(0.1, 0.1, 0.2, 0.2),
         name="multibox_target")
     loc_target = tmp[0]
     loc_target_mask = tmp[1]
     cls_target = tmp[2]
 
-    cls_prob = mx.symbol.SoftmaxOutput(data=cls_preds, label=cls_target, \
-        ignore_label=-1, use_ignore=True, grad_scale=1., multi_output=True, \
-        normalization='valid', name="cls_prob")
-    loc_loss_ = mx.symbol.smooth_l1(name="loc_loss_", \
-        data=loc_target_mask * (loc_preds - loc_target), scalar=1.0)
-    loc_loss = mx.symbol.MakeLoss(loc_loss_, grad_scale=1., \
-        normalization='valid', name="loc_loss")
+    cls_prob = mx.symbol.SoftmaxOutput(data=cls_preds, label=cls_target,
+                                       ignore_label=-1, use_ignore=True, grad_scale=1., multi_output=True,
+                                       normalization='valid', name="cls_prob")
+    loc_loss_ = mx.symbol.smooth_l1(name="loc_loss_",
+                                    data=loc_target_mask * (loc_preds - loc_target), scalar=1.0)
+    loc_loss = mx.symbol.MakeLoss(loc_loss_, grad_scale=1.,
+                                  normalization='valid', name="loc_loss")
 
     # monitoring training status
     cls_label = mx.symbol.MakeLoss(data=cls_target, grad_scale=0, name="cls_label")
-    det = mx.symbol.contrib.MultiBoxDetection(*[cls_prob, loc_preds, anchor_boxes], \
-        name="detection", nms_threshold=nms_thresh, force_suppress=force_suppress,
-        variances=(0.1, 0.1, 0.2, 0.2), nms_topk=nms_topk)
+    det = mx.symbol.contrib.MultiBoxDetection(*[cls_prob, loc_preds, anchor_boxes],
+                                              name="detection", nms_threshold=nms_thresh, force_suppress=force_suppress,
+                                              variances=(0.1, 0.1, 0.2, 0.2), nms_topk=nms_topk)
     det = mx.symbol.MakeLoss(data=det, grad_scale=0, name="det_out")
 
     # group output
     out = mx.symbol.Group([cls_prob, loc_loss, cls_label, det])
     return out
+
 
 def get_symbol(network, num_classes, from_layers, num_filters, sizes, ratios,
                strides, pads, normalizations=-1, steps=[], min_filter=128,
@@ -169,15 +175,17 @@ def get_symbol(network, num_classes, from_layers, num_filters, sizes, ratios,
     """
     body = import_module(network).get_symbol(num_classes, **kwargs)
     layers = multi_layer_feature(body, from_layers, num_filters, strides, pads,
-        min_filter=min_filter)
+                                 min_filter=min_filter)
 
     loc_preds, cls_preds, anchor_boxes = multibox_layer(layers, \
-        num_classes, sizes=sizes, ratios=ratios, normalization=normalizations, \
-        num_channels=num_filters, clip=False, interm_layer=0, steps=steps)
+                                                        num_classes, sizes=sizes, ratios=ratios,
+                                                        normalization=normalizations, \
+                                                        num_channels=num_filters, clip=False, interm_layer=0,
+                                                        steps=steps)
 
     cls_prob = mx.symbol.SoftmaxActivation(data=cls_preds, mode='channel', \
-        name='cls_prob')
+                                           name='cls_prob')
     out = mx.symbol.contrib.MultiBoxDetection(*[cls_prob, loc_preds, anchor_boxes], \
-        name="detection", nms_threshold=nms_thresh, force_suppress=force_suppress,
-        variances=(0.1, 0.1, 0.2, 0.2), nms_topk=nms_topk)
+                                              name="detection", nms_threshold=nms_thresh, force_suppress=force_suppress,
+                                              variances=(0.1, 0.1, 0.2, 0.2), nms_topk=nms_topk)
     return out
