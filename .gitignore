@@ -103,3 +103,5 @@ ENV/
 *.lst
 *.rec
 *.idx
+*.png
+*.idea

@@ -153,9 +153,9 @@ def expected_improvement(x, gaussian_process, evaluated_loss, greater_is_better=
     """
 
     x_to_predict = x.reshape(-1, n_params)
-    print('x_to_predict %s' % x_to_predict)
+    # print('x_to_predict %s' % x_to_predict)
     mu, sigma = gaussian_process.predict(x_to_predict, return_std=True)
-    print('=========== mu  %s' % mu)
+    # print('=========== mu  %s' % mu)
 
     if greater_is_better:
         loss_optimum = np.max(evaluated_loss)
@@ -199,7 +199,6 @@ def sample_next_hyperparameter(acquisition_func, gaussian_process,
     n_params = bounds.shape[0]
 
     for starting_point in np.random.uniform(bounds[:, 0], bounds[:, 1], size=(n_restarts, n_params)):
-        print('starting_point %s ' % starting_point)
         res = minimize(fun=acquisition_func,
                        x0=starting_point.reshape(1, -1),
                        bounds=bounds,
@@ -213,8 +212,10 @@ def sample_next_hyperparameter(acquisition_func, gaussian_process,
     return best_x
 
 
-def bayesian_optimisation(n_iters, sample_loss, bounds, x0=None, n_pre_samples=5,
-                          gp_params=None, random_search=False, alpha=1e-5, epsilon=1e-7):
+def bayesian_optimisation(n_iters, sample_loss, bounds,
+                          x0=None, n_pre_samples=5,
+                          gp_params=None, random_search=False,
+                          alpha=1e-5, epsilon=1e-7):
     """ bayesian_optimisation
     Uses Gaussian Processes to optimise the loss function `sample_loss`.
     Arguments:
@@ -312,6 +313,10 @@ if __name__ == '__main__':
                                        n_informative=15,
                                        n_redundant=5)
 
+    def function_to_minimize(x):
+        """Calculate an aribitrary 2-d function with some noise with minimum near [1, 2.6]."""
+        return - (np.sin(x[0]) * np.cos(x[1]) + np.cos(x[0] + x[1]) + np.random.uniform(-0.02, 0.02))
+
 
     def sample_loss(params):
         return cross_val_score(SVC(C=10 ** params[0], gamma=10 ** params[1], random_state=12345),
@@ -320,8 +325,10 @@ if __name__ == '__main__':
                                ).mean()
 
 
-    lambdas = np.linspace(1, -4, 25)
-    gammas = np.linspace(1, -4, 20)
+    # lambdas = np.linspace(1, -4, 25)
+    # gammas = np.linspace(1, -4, 20)
+    lambdas = np.linspace(0, 2, 20)
+    gammas = np.linspace(0, 4, 40)
     from matplotlib import rc
     # We need the cartesian combination of these two vectors
     '''
@@ -339,10 +346,11 @@ if __name__ == '__main__':
     # plt.savefig('/Users/thomashuijskens/Personal/gp-optimisation/figures/real_loss_contour.png', bbox_inches='tight')
     plt.show()
     '''
-    bounds = np.array([[-4, 1], [-4, 1]])
+    # bounds = np.array([[-4, 1], [-4, 1]])
+    bounds = np.array([[0, 2], [0, 4]])
 
     xp, yp = bayesian_optimisation(n_iters=30,
-                                   sample_loss=sample_loss,
+                                   sample_loss=function_to_minimize,
                                    bounds=bounds,
                                    n_pre_samples=3,
                                    random_search=100000)

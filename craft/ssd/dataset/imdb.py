@@ -97,7 +97,7 @@ class Imdb(object):
             path = self.image_path_from_index(index)
             if root:
                 path = osp.relpath(path, root)
-            str_list.append('\t'.join([str(index), str(2), str(label.shape[1])] \
+            str_list.append('\t'.join([str(index), str(2), str(label.shape[1])]
                                       + ["{0:.4f}".format(x) for x in label.ravel()] + [path, ]) + '\n')
         if str_list:
             if shuffle:
